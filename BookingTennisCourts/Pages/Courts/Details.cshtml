@@ -1,0 +1,43 @@
+﻿@page
+@model BookingTennisCourts.Pages.Courts.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Court</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.Info)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.Info)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.Status)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.PricePerHour)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.PricePerHour)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@Model.Court?.Id"><i class="fa fa-edit" aria-hidden="true"> </i>Edit</a> |
+    <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+</div>

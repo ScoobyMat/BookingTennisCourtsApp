@@ -1,0 +1,70 @@
+﻿@page
+@model BookingTennisCourts.Pages.Reservations.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<div class="text-center">
+    <h1 class="display-4">
+    @if (TempData.ContainsKey("ReservationMessage"))
+    {
+        <p class="text-success">@TempData["ReservationMessage"]</p>
+    }
+    </h1>
+</div>
+
+
+<p>
+    <a class="btn btn-primary" asp-page="Create"><i class="fa fa-plus" aria-hidden="true"> </i> Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation[0].Court)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation[0].Data)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation[0].StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation[0].EndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reservation[0].UserId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Reservation) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Court.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Data)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+                <td>
+                    <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit" aria-hidden="true"> </i> Edit</a> |
+                    <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"><i class="fa fa-book" aria-hidden="true"></i> Details</a> |
+                    <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
