@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BookingTennisCourts.Data;
+using System.Security.Claims;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
@@ -35,10 +36,16 @@ namespace BookingTennisCourts.Pages.Reservations
                 return Page();
             }
 
+            // Pobierz aktualnie zalogowanego użytkownika
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Reservation.UserId = userId;
+
             _context.Reservations.Add(Reservation);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
+
     }
 }

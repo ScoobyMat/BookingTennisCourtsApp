@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using BookingTennisCourts.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -81,12 +82,16 @@ namespace BookingTennisCourts.Pages
             var startTime = TimeSpan.Parse(SelectedHour);
             var endTime = TimeSpan.Parse(SelectedEndHour);
 
+            // Pobierz aktualnie zalogowanego użytkownika
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var reservation = new Reservation
             {
                 CourtId = SelectedCourt,
                 Data = ReservationData,
                 StartTime = startTime,
                 EndTime = endTime,
+                UserId = userId,
             };
 
             _context.Reservations.Add(reservation);
@@ -94,6 +99,7 @@ namespace BookingTennisCourts.Pages
 
             return RedirectToPage("Reservations/Index");
         }
+
 
         private void LoadCourts()
         {
