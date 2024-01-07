@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class CreateModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly IGenericRepository<Court> _repository;
 
-        public CreateModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public CreateModel(IGenericRepository<Court> repository)
         {
-            _context = context;
+            this._repository = repository;
         }
 
         public IActionResult OnGet()
@@ -24,19 +21,17 @@ namespace BookingTennisCourts.Pages.Courts
         }
 
         [BindProperty]
-        public Court Court { get; set; } = default!;
-        
+        public Court Court { get; set; } = new Court();
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Courts == null || Court == null)
+            if (!ModelState.IsValid || _repository == null || Court == null)
             {
                 return Page();
             }
 
-            _context.Courts.Add(Court);
-            await _context.SaveChangesAsync();
+            await _repository.Insert(Court);
 
             return RedirectToPage("./Index");
         }

@@ -1,60 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
     public class DeleteModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly IGenericRepository<Reservation> _repository;
 
-        public DeleteModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public DeleteModel(IGenericRepository<Reservation> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [BindProperty]
-      public Reservation Reservation { get; set; } = default!;
+        public Reservation Reservation { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Reservations == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations.FirstOrDefaultAsync(m => m.Id == id);
+            Reservation = await _repository.Get(id.Value);
 
-            if (reservation == null)
+            if (Reservation == null)
             {
                 return NotFound();
             }
-            else 
-            {
-                Reservation = reservation;
-            }
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Reservations == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var reservation = await _context.Reservations.FindAsync(id);
 
-            if (reservation != null)
-            {
-                Reservation = reservation;
-                _context.Reservations.Remove(Reservation);
-                await _context.SaveChangesAsync();
-            }
+            await _repository.Delete(id.Value);
 
             return RedirectToPage("./Index");
         }

@@ -1,9 +1,7 @@
 ﻿namespace BookingTennisCourts.Data
 {
-    public class Court
+    public class Court : BaseDomainEntity
     {
-        public int Id { get; set; }
-
         public string Name { get; set; } 
 
         public string Info { get; set; } 

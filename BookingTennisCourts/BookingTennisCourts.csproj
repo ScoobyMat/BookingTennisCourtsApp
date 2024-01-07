@@ -24,4 +24,9 @@
 	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\BookingTennisCourts.Data\BookingTennisCourts.Data.csproj" />
+	  <ProjectReference Include="..\BookingTennisCourts.Repositories\BookingTennisCourts.Repositories.csproj" />
+	</ItemGroup>
+
 </Project>

@@ -2,6 +2,8 @@ using BookingTennisCourts.Data;
 using BookingTennisCourts.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using BookingTennisCourts.Repositories.Repositories;
+using BookingTennisCourts.Repositories.Contracts;
 
 namespace BookingTennisCourts
 {
@@ -17,6 +19,10 @@ namespace BookingTennisCourts
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => { options.SignIn.RequireConfirmedAccount = false; })
                 .AddRoles<IdentityRole>()

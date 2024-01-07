@@ -1,61 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class DeleteModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly IGenericRepository<Court> _repository;
 
-        public DeleteModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public DeleteModel(IGenericRepository<Court> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [BindProperty]
-      public Court Court { get; set; } = default!;
+        public Court Court { get; set; } = default!;
+
+        public bool HasReservations { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Courts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var court = await _context.Courts.FirstOrDefaultAsync(m => m.Id == id);
+            Court = await _repository.Get(id.Value);
 
-            if (court == null)
+            if (Court == null)
             {
                 return NotFound();
             }
-            else 
-            {
-                Court = court;
-            }
+
+            HasReservations = await _repository.HasReservations(id.Value);
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Courts == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var court = await _context.Courts.FindAsync(id);
+            HasReservations = await _repository.HasReservations(id.Value);
 
-            if (court != null)
+            if (HasReservations)
             {
-                Court = court;
-                _context.Courts.Remove(Court);
-                await _context.SaveChangesAsync();
+                Court = await _repository.Get(id.Value);
+                return Page();
             }
 
+            await _repository.Delete(id.Value);
             return RedirectToPage("./Index");
         }
     }

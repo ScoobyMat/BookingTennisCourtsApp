@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class EditModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly IGenericRepository<Court> _repository;
 
-        public EditModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public EditModel(IGenericRepository<Court> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [BindProperty]
@@ -24,17 +21,18 @@ namespace BookingTennisCourts.Pages.Courts
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Courts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var court =  await _context.Courts.FirstOrDefaultAsync(m => m.Id == id);
-            if (court == null)
+            Court = await _repository.Get(id.Value);
+
+            if (Court == null)
             {
                 return NotFound();
             }
-            Court = court;
+
             return Page();
         }
 
@@ -47,15 +45,13 @@ namespace BookingTennisCourts.Pages.Courts
                 return Page();
             }
 
-            _context.Attach(Court).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _repository.Update(Court);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CourtExists(Court.Id))
+                if (!await MakeExistsAsync(Court.Id))
                 {
                     return NotFound();
                 }
@@ -68,9 +64,10 @@ namespace BookingTennisCourts.Pages.Courts
             return RedirectToPage("./Index");
         }
 
-        private bool CourtExists(int id)
+        private async Task<bool> MakeExistsAsync(int id)
         {
-          return (_context.Courts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return await _repository.Exists(id);
         }
+
     }
 }

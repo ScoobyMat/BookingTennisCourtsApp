@@ -37,10 +37,19 @@
             @Html.DisplayFor(model => model.Court.PricePerHour)
         </dd>
     </dl>
-    
+
     <form method="post">
         <input type="hidden" asp-for="Court.Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
     </form>
+    
+    @if (Model.HasReservations)
+    {
+        <div class="alert alert-warning" role="alert">
+            This court has existing reservations. You cannot delete it until all reservations are canceled or completed.
+        </div>
+    }
+    
+    <div asp-validation-summary="All" class="text-danger"></div>
 </div>

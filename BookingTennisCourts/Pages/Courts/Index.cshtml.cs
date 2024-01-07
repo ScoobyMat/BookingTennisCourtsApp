@@ -1,34 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BookingTennisCourts.Pages.Courts
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
 
     public class IndexModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly IGenericRepository<Court> _repository;
 
-        public IndexModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public IndexModel(IGenericRepository<Court> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        public IList<Court> Court { get;set; } = default!;
+        public IList<Court> Court { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            if (_context.Courts != null)
-            {
-                Court = await _context.Courts.ToListAsync();
-            }
+            Court = await _repository.GetAll();
         }
     }
 }

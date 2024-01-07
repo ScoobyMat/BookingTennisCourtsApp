@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookingTennisCourts.Data
 {
-    public class Reservation
+    public class Reservation : BaseDomainEntity
     {
-        public int Id { get; set; }
 
         public int? CourtId { get; set; }
 
