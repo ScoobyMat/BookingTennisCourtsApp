@@ -1,6 +1,7 @@
 ﻿using BookingTennisCourts.Data.Data;
 using BookingTennisCourts.Data.Entities;
 using BookingTennisCourts.Repositories.Contracts;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,16 +28,11 @@ namespace BookingTennisCourts.Repositories.Repositories
 
         public List<TimeSpan> GetAvailableTimes(int? courtId, DateTime date)
         {
-            var reservationsForCourtAndDate = _context.Reservations
-                .Where(r => r.CourtId == courtId && r.Data.Date == date.Date)
-                .ToList();
+            var reservationsForCourtAndDate = GetReservationsForCourtAndDate(courtId, date);
 
-            var bookedTimes = reservationsForCourtAndDate
-                .SelectMany(r => Enumerable.Range(r.StartTime.Hours, r.EndTime.Hours - r.StartTime.Hours)
-                    .Select(hour => new TimeSpan(hour, 0, 0))
-                    .ToList())
-                .ToList();
+            var bookedTimes = GetBookedTimes(reservationsForCourtAndDate);
 
+            // Wybierz dostępne godziny spośród dostępnych w godzinach 10-18, które nie są zarezerwowane
             var availableTimes = Enumerable.Range(10, 8)
                 .Select(hour => new TimeSpan(hour, 0, 0))
                 .Where(time => !bookedTimes.Contains(time))
@@ -44,6 +40,66 @@ namespace BookingTennisCourts.Repositories.Repositories
 
             return availableTimes;
         }
+
+        public bool CheckReservation(Reservation reservation)
+        {
+            // Pobierz istniejące rezerwacje dla danego kortu i daty
+            var existingReservations = GetExistingReservations(reservation.CourtId, reservation.Data);
+
+            // Sprawdź, czy nowa rezerwacja koliduje z istniejącymi rezerwacjami
+            return existingReservations.All(existingReservation =>
+                !(reservation.StartTime < existingReservation.EndTime && reservation.EndTime > existingReservation.StartTime) &&
+                !(reservation.EndTime > existingReservation.StartTime && reservation.StartTime < existingReservation.EndTime)
+            );
+        }
+
+        public List<(TimeSpan Hour, string Status)> GetAvailabilityAndOccupancy(int? courtId, DateTime date)
+        {
+            var reservationsForCourtAndDate = GetReservationsForCourtAndDate(courtId, date);
+
+            // Utwórz listę dostępnych i zajętych godzin
+            var availableAndOccupiedHours = Enumerable.Range(10, 8)
+                .Select(hour =>
+                {
+                    var currentHour = new TimeSpan(hour, 0, 0);
+
+                    var isBooked = reservationsForCourtAndDate.Any(r => currentHour >= r.StartTime && currentHour < r.EndTime);
+
+                    var status = isBooked ? "Zarezerwowane" : "Dostępne";
+
+                    return (currentHour, status);
+                })
+                .ToList();
+
+            return availableAndOccupiedHours;
+        }
+
+        // Pobierz rezerwacje dla danego kortu i daty
+        private List<Reservation> GetReservationsForCourtAndDate(int? courtId, DateTime date)
+        {
+            return _context.Reservations
+                .Where(r => r.CourtId == courtId && r.Data.Date == date.Date)
+                .ToList();
+        }
+
+        // Pobierz zarezerwowane godziny z listy rezerwacji
+        private List<TimeSpan> GetBookedTimes(List<Reservation> reservations)
+        {
+            return reservations
+                .SelectMany(r => Enumerable.Range(r.StartTime.Hours, r.EndTime.Hours - r.StartTime.Hours)
+                    .Select(hour => new TimeSpan(hour, 0, 0))
+                    .ToList())
+                .ToList();
+        }
+
+        // Pobierz istniejące rezerwacje dla danego kortu i daty
+        private List<Reservation> GetExistingReservations(int? courtId, DateTime date)
+        {
+            return _context.Reservations
+                .Where(r => r.CourtId == courtId && r.Data == date)
+                .ToList();
+        }
+
 
 
 

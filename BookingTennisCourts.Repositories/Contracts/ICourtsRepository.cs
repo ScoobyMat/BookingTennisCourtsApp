@@ -11,7 +11,6 @@ namespace BookingTennisCourts.Repositories.Contracts
     {
         Task<bool> CourtHasReservations(int courtId);
         Task<string> GetCourtName(int courtId);
-        Task<List<TimeSpan>> GetAvailableTimeSlots(int? courtId, DateTime date);
     }
 
 }
