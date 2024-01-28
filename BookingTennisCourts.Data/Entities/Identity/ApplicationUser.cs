@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace BookingTennisCourts.Data.Identity
+namespace BookingTennisCourts.Data.Entities.Identity
 {
     public class ApplicationUser : IdentityUser
     {

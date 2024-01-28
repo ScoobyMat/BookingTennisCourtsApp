@@ -1,8 +1,9 @@
-﻿using BookingTennisCourts.Data.Identity;
+﻿using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Data.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookingTennisCourts.Data
+namespace BookingTennisCourts.Data.Data
 {
     public class BookingTennisCourtsAppDbContext : IdentityDbContext<ApplicationUser>
     {

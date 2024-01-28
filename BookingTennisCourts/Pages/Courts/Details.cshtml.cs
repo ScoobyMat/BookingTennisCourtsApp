@@ -1,41 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using BookingTennisCourts.Data;
+using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Data.Entities;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class DetailsModel : PageModel
     {
-        private readonly BookingTennisCourts.Data.BookingTennisCourtsAppDbContext _context;
+        private readonly ICourtsRepository _repository;
 
-        public DetailsModel(BookingTennisCourts.Data.BookingTennisCourtsAppDbContext context)
+        public DetailsModel(ICourtsRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-      public Court Court { get; set; } = default!; 
+        public Court Court { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Courts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var court = await _context.Courts.FirstOrDefaultAsync(m => m.Id == id);
-            if (court == null)
+            Court = await _repository.Get(id.Value);
+
+            if (Court == null)
             {
                 return NotFound();
             }
-            else 
-            {
-                Court = court;
-            }
+
             return Page();
         }
     }

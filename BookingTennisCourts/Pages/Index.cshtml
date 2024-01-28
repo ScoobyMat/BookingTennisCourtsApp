@@ -5,125 +5,45 @@
     ViewData["Title"] = "Index";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Rezerwacje Kortów</title>
-</head>
-<body>
-    <header>
-        <div class="header-background"></div>
-        <div class="header-content">
-            <h1>Rezerwacje Kortów Tenisowych</h1>
-            <p>Wybierz kort i zarezerwuj swój czas gry.</p>
-        </div>
-    </header>
+<h1 class="display-4">Witaj w Tennis Club</h1>
 
-    <main>
-        <section id="court-selection">
-            <h2>Wybierz Kort</h2>
-            @if (Model.Courts != null)
-            {
-                @foreach (var court in Model.Courts)
-                {
-                    <div class="btn-group">
-                        <form method="post" asp-page-handler="SelectCourt">
-                            <input type="hidden" name="SelectedCourt" value="@court.Id" />
-                            <button type="submit" class="btn btn-primary">@court.Name</button>
-                        </form>
-                    </div>
-                }
-            }
-        </section>
+<p class="lead">
+    Twoim miejscu, gdzie pasja do tenisa łączy się z niezapomnianymi chwilami, emocjami i sportową przygodą! <br />
+    Nasz klub to nie tylko miejsce treningów, ale przede wszystkim społeczność, w której rozwija się miłość do tenisa.<br />
+</p>
 
-        <section id="Time">
-            <h2>Wybierz godzinę rozpoczęcia:</h2>
-            <div class="btn-group">
-                @for (int i = 10; i < 18; i++)
-                {
-                    var hour = $"{i:00}:00:00";
+<p class="lead">
+    Dysponujemy nowoczesnymi kortami tenisowymi, które spełniają najwyższe standardy.<br />
+    Nasze obiekty są dostępne dla wszystkich członków klubu, aby mogli cieszyć się grą o każdej porze dnia.</br>
+</p>
 
-                    // Sprawdź dostępność godziny rozpoczęcia w zależności od kortu
-                    var isHourAvailable = Model.Reservations == null ||
-                    !Model.Reservations.Any(r => r.CourtId == Model.SelectedCourt &&
-                    (TimeSpan.Parse(hour) >= r.StartTime && TimeSpan.Parse(hour) < r.EndTime));
+<div class="ImgContainer d-flex justify-content-between">
+    <img src="/images/Kort1.jpg" alt="Kort1" class="img-fluid">
+    <img src="/images/Kort2.jpg" alt="Kort2" class="img-fluid">
+    <img src="/images/Kort3.jpg" alt="Kort3" class="img-fluid">
+</div>
 
-                    <form method="post" asp-page-handler="SelectHour">
-                        <input type="hidden" name="SelectedCourt" value="@Model.SelectedCourt" />
-                        <button type="submit" class="btn btn-outline-primary" name="SelectedHour" value="@hour" @(isHourAvailable ? "" : "disabled")>@i:00</button>
-                    </form>
-                }
-            </div>
-        </section>
+<h2 class="mt-5">Zarezerwuj swój kort już teraz</h2>
 
-            <h2>Wybierz godzinę zakończenia:</h2>
-            <div class="btn-group">
-                @{
-                    int lastAvailableEndHour = Model.StartTime.Hours + 1;
 
-                    for (int i = Model.StartTime.Hours + 1; i <= 18; i++)
-                    {
-                        var endHour = $"{i:00}:00:00";
+<h3>Wybierz kort i date</h3>
 
-                        // Sprawdź dostępność godziny zakończenia w zależności od kortu
-                        var isEndHourAvailable = Model.Reservations == null ||
-                        !Model.Reservations.Any(r => r.CourtId == Model.SelectedCourt &&
-                        (TimeSpan.Parse(endHour) >= r.StartTime && TimeSpan.Parse(endHour) < r.EndTime));
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Reservation.CourtId" class="control-label">Court</label>
+        <select asp-for="Reservation.CourtId" class="form-control" asp-items="@Model.Courts"></select>
+        <span asp-validation-for="Reservation.CourtId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Reservation.Data" class="control-label"></label>
+        <input asp-for="Reservation.Data" class="form-control" type="date" />
+        <span asp-validation-for="Reservation.Data" class="text-danger"></span>
+    </div>
+   
+    <div class="form-group">
+        <input type="submit" value="Sprawdz dostępne godziny" class="btn btn-success" />
+    </div>
+</form>
 
-                        if (isEndHourAvailable)
-                        {
-                            lastAvailableEndHour = i;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
 
-                    for (int i = Model.StartTime.Hours + 1; i <= lastAvailableEndHour; i++)
-                    {
-                        var endHour = $"{i:00}:00:00";
-
-                        <form method="post" asp-page-handler="SelectEndHour">
-                            <input type="hidden" name="SelectedCourt" value="@Model.SelectedCourt" />
-                            <input type="hidden" name="SelectedHour" value="@Model.SelectedHour" />
-                            <button type="submit" class="btn btn-outline-danger" name="SelectedEndHour" value="@i:00:00">@i:00</button>
-                        </form>
-                    }
-                }
-            </div>
-
-        <section id="reservation-form">
-            <h2>Zarezerwuj Kort</h2>
-
-            <form asp-page-handler="CreateReservation">
-                <div class="form-group">
-                    <label asp-for="SelectedCourt" class="control-label">Court</label>
-                    <input asp-for="SelectedCourt" class="form-control" readonly>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ReservationData" class="control-label"></label>
-                    <input asp-for="ReservationData" class="form-control" type="date" />
-                    <span asp-validation-for="ReservationData" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="SelectedHour" class="control-label">Start Time</label>
-                    <input asp-for="SelectedHour" class="form-control" readonly>
-                </div>
-
-                    <div class="form-group">
-                        <label asp-for="SelectedEndHour" class="control-label">End Time</label>
-                        <input asp-for="SelectedEndHour" class="form-control" readonly>
-                    </div>
-
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-success" />
-                </div>
-            </form>
-        </section>
-    </main>
-</body>
-</html>

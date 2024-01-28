@@ -12,16 +12,16 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.Court)
+            @Html.DisplayNameFor(model => model.Reservation.CourtId)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reservation.Court.Id)
+            @Html.DisplayFor(model => model.Reservation.CourtId)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Reservation.Data)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reservation.Data)
+            @Model.Reservation.Data.ToShortDateString()
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Reservation.StartTime)

@@ -1,17 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using BookingTennisCourts.Data;
 using BookingTennisCourts.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
+using BookingTennisCourts.Data.Entities;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class EditModel : PageModel
     {
-        private readonly IGenericRepository<Court> _repository;
+        private readonly ICourtsRepository _repository;
 
-        public EditModel(IGenericRepository<Court> repository)
+        public EditModel(ICourtsRepository repository)
         {
             _repository = repository;
         }
@@ -51,7 +51,7 @@ namespace BookingTennisCourts.Pages.Courts
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await MakeExistsAsync(Court.Id))
+                if (!await _repository.Exists(Court.Id))
                 {
                     return NotFound();
                 }
@@ -63,11 +63,5 @@ namespace BookingTennisCourts.Pages.Courts
 
             return RedirectToPage("./Index");
         }
-
-        private async Task<bool> MakeExistsAsync(int id)
-        {
-            return await _repository.Exists(id);
-        }
-
     }
 }

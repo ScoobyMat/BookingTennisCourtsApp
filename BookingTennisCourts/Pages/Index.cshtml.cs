@@ -2,117 +2,68 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using BookingTennisCourts.Data;
+using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Data.Entities.Identity;
+using BookingTennisCourts.Repositories.Contracts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
 
 namespace BookingTennisCourts.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly BookingTennisCourtsAppDbContext _context;
+        private readonly IReservationsRepository _reservationRepository;
+        private readonly ICourtsRepository _courtsRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        [BindProperty(SupportsGet = true)]
-        public int SelectedCourt { get; set; }
-
-        [BindProperty]
-        public DateTime ReservationData { get; set; } = DateTime.Now;
-
-        [BindProperty]
-        public TimeSpan StartTime { get; set; }
-
-        [BindProperty]
-        public string SelectedHour { get; set; }
-
-        [BindProperty]
-        public TimeSpan EndTime { get; set; }
-
-        [BindProperty]
-        public string SelectedEndHour { get; set; }
-
-        public List<Court> Courts { get; set; }
-
-        public List<Reservation> Reservations { get; set; }
-
-        public IndexModel(BookingTennisCourtsAppDbContext context)
+        public IndexModel(IReservationsRepository reservationRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
+            _reservationRepository = reservationRepository;
+            _courtsRepository = courtsRepository;
+            _userManager = userManager;
         }
 
-        public IActionResult OnGet()
+        public SelectList Courts { get; set; } = default!;
+
+        [BindProperty]
+        public Reservation Reservation { get; set; } = default!;
+
+        public List<TimeSpan> AvailableTimes { get; set; } = new List<TimeSpan>();
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            LoadCourts();
-            LoadReservations();
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            await LoadInitialData();
             return Page();
         }
 
-        public IActionResult OnPostSelectCourt()
-        {
-            LoadCourts();
-            LoadReservations();
-            return Page();
-        }
-
-        public IActionResult OnPostSelectHour()
-        {
-            LoadCourts();
-            LoadReservations();
-            StartTime = TimeSpan.Parse(SelectedHour);
-            return Page();
-        }
-
-        public IActionResult OnPostSelectEndHour()
-        {
-            LoadCourts();
-            LoadReservations();
-            StartTime = TimeSpan.Parse(SelectedHour);
-            EndTime = TimeSpan.Parse(SelectedEndHour);
-            return Page();
-        }
-
-        public IActionResult OnPostCreateReservation()
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                LoadCourts();
-                LoadReservations();
+                await LoadInitialData();
                 return Page();
             }
 
-            var startTime = TimeSpan.Parse(SelectedHour);
-            var endTime = TimeSpan.Parse(SelectedEndHour);
+            var userId = _userManager.GetUserId(User);
+            Reservation.UserId = userId;
 
-            // Pobierz aktualnie zalogowanego użytkownika
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var reservation = new Reservation
-            {
-                CourtId = SelectedCourt,
-                Data = ReservationData,
-                StartTime = startTime,
-                EndTime = endTime,
-                UserId = userId,
-            };
-
-            _context.Reservations.Add(reservation);
-            _context.SaveChanges();
-
-            return RedirectToPage("Reservations/Index");
+            // Przejdź do widoku z formularzem rezerwacji
+            return RedirectToPage("./Reservations/Create", new { courtId = Reservation.CourtId, date = Reservation.Data.ToString("yyyy-MM-dd") });
         }
 
-
-        private void LoadCourts()
+        private async Task LoadInitialData()
         {
-            Courts = _context.Courts.ToList();
+            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
         }
-
-        private void LoadReservations()
-        {
-            Reservations = _context.Reservations
-                .Where(r => r.CourtId == SelectedCourt && r.Data == ReservationData.Date)
-                .ToList();
-        }
-
-
     }
 }

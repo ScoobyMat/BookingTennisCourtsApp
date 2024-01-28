@@ -1,9 +1,9 @@
-using BookingTennisCourts.Data;
-using BookingTennisCourts.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BookingTennisCourts.Repositories.Repositories;
 using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Data.Entities.Identity;
+using BookingTennisCourts.Data.Data;
 
 namespace BookingTennisCourts
 {
@@ -21,7 +21,8 @@ namespace BookingTennisCourts
             });
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+            builder.Services.AddScoped<IReservationsRepository, ReservationsRepository>();
+            builder.Services.AddScoped<ICourtsRepository, CourtsRepository>();
 
 
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => { options.SignIn.RequireConfirmedAccount = false; })

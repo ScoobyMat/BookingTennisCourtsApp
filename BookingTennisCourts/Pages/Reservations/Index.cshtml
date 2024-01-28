@@ -16,55 +16,65 @@
     </h1>
 </div>
 
+<style>
+
+    td,th{
+        text-align:center;
+    }
+
+</style>
 
 <p>
     <a class="btn btn-primary" asp-page="Create"><i class="fa fa-plus" aria-hidden="true"> </i> Create New</a>
 </p>
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Reservation[0].Court)
+                Id rezerwacji
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Reservation[0].Data)
+                Kort
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Reservation[0].StartTime)
+                Data
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Reservation[0].EndTime)
+                StartTime
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Reservation[0].UserId)
+                EndTime
             </th>
-            <th></th>
+            <th>
+                Action
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Reservation) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Court.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Data)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
+        @foreach (var item in Model.Reservation)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>                
+                <td>
+                    @Html.DisplayFor(modelItem => item.Court.Name)
+                </td>
+                <td>
+                    @item.Data.ToShortDateString()
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndTime)
+                </td>
                 <td>
                     <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit" aria-hidden="true"> </i> Edit</a> |
                     <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"><i class="fa fa-book" aria-hidden="true"></i> Details</a> |
                     <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
                 </td>
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>

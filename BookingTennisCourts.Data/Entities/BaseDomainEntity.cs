@@ -1,4 +1,4 @@
-﻿namespace BookingTennisCourts.Data
+﻿namespace BookingTennisCourts.Data.Entities
 {
     public abstract class BaseDomainEntity
     {

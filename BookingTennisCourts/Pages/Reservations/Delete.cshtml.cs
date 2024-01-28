@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Data;
 using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Data.Entities;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
     public class DeleteModel : PageModel
     {
-        private readonly IGenericRepository<Reservation> _repository;
+        private readonly IReservationsRepository _repository;
 
-        public DeleteModel(IGenericRepository<Reservation> repository)
+        public DeleteModel(IReservationsRepository repository)
         {
             _repository = repository;
         }

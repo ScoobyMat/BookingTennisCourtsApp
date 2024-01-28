@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Data;
 using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Data.Entities;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class DeleteModel : PageModel
     {
-        private readonly IGenericRepository<Court> _repository;
+        private readonly ICourtsRepository _repository;
 
-        public DeleteModel(IGenericRepository<Court> repository)
+        public DeleteModel(ICourtsRepository repository)
         {
             _repository = repository;
         }
@@ -34,7 +34,7 @@ namespace BookingTennisCourts.Pages.Courts
                 return NotFound();
             }
 
-            HasReservations = await _repository.HasReservations(id.Value);
+            HasReservations = await _repository.CourtHasReservations(id.Value);
 
             return Page();
         }
@@ -45,11 +45,18 @@ namespace BookingTennisCourts.Pages.Courts
             {
                 return NotFound();
             }
-            HasReservations = await _repository.HasReservations(id.Value);
+
+            Court = await _repository.Get(id.Value);
+
+            if (Court == null)
+            {
+                return NotFound();
+            }
+
+            HasReservations = await _repository.CourtHasReservations(id.Value);
 
             if (HasReservations)
             {
-                Court = await _repository.Get(id.Value);
                 return Page();
             }
 

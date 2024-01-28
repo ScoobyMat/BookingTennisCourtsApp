@@ -1,4 +1,5 @@
-﻿using BookingTennisCourts.Data;
+﻿using BookingTennisCourts.Data.Data;
+using BookingTennisCourts.Data.Entities;
 using BookingTennisCourts.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +14,7 @@ namespace BookingTennisCourts.Repositories.Repositories
     {
 
         private readonly BookingTennisCourtsAppDbContext _context;
-        private readonly DbSet<TEntity> _db;
+        protected readonly DbSet<TEntity> _db;
 
         public GenericRepository(BookingTennisCourtsAppDbContext context)
         {
@@ -70,10 +71,6 @@ namespace BookingTennisCourts.Repositories.Repositories
             _context.Entry(entity).State = EntityState.Modified;
             await SaveChanges();
         }
-
-        public async Task<bool> HasReservations(int courtId)
-        {
-            return await _context.Reservations.AnyAsync(r => r.CourtId == courtId);
-        }
+        
     }
 }

@@ -1,4 +1,4 @@
-﻿using BookingTennisCourts.Data;
+﻿using BookingTennisCourts.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +22,5 @@ namespace BookingTennisCourts.Repositories.Contracts
         Task Update(TEntity entity);
 
         Task<int> SaveChanges();
-
-        Task<bool> HasReservations(int courtId);
     }
 }

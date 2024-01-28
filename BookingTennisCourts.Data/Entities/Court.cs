@@ -1,10 +1,10 @@
-﻿namespace BookingTennisCourts.Data
+﻿namespace BookingTennisCourts.Data.Entities
 {
     public class Court : BaseDomainEntity
     {
-        public string Name { get; set; } 
+        public string Name { get; set; }
 
-        public string Info { get; set; } 
+        public string Info { get; set; }
 
         public CourtStatus Status { get; set; }
 

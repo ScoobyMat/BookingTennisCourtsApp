@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Data;
 using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Data.Entities;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class CreateModel : PageModel
     {
-        private readonly IGenericRepository<Court> _repository;
+        private readonly ICourtsRepository _repository;
 
-        public CreateModel(IGenericRepository<Court> repository)
+        public CreateModel(ICourtsRepository repository)
         {
             this._repository = repository;
         }

@@ -1,4 +1,5 @@
 ﻿@page
+@using BookingTennisCourts.Data.Entities
 @model BookingTennisCourts.Pages.Courts.EditModel
 
 @{
@@ -26,7 +27,9 @@
             </div>
             <div class="form-group">
                 <label asp-for="Court.Status" class="control-label"></label>
-                <select asp-for="Court.Status" class="form-control"></select>
+                <select asp-for="Court.Status" asp-items="Html.GetEnumSelectList<CourtStatus>()" class="form-control">
+                    <option value="">Select Status</option>
+                </select>
                 <span asp-validation-for="Court.Status" class="text-danger"></span>
             </div>
             <div class="form-group">
