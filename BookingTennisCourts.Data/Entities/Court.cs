@@ -9,5 +9,7 @@
         public string Status { get; set; }
 
         public float PricePerHour { get; set; }
+
+        public string UrlToPicture { get; set; }
     }
 }

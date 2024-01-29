@@ -5,11 +5,11 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using BookingTennisCourts.Data.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using BookingTennisCourts.Data.Entities.Identity;
 
 namespace BookingTennisCourts.Areas.Identity.Pages.Account
 {

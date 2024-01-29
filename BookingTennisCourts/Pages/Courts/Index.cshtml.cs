@@ -11,18 +11,18 @@ namespace BookingTennisCourts.Pages.Courts
     [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
-        private readonly ICourtsRepository _repository;
+        private readonly ICourtsRepository _courtsRepository;
 
         public IndexModel(ICourtsRepository repository)
         {
-            _repository = repository;
+            _courtsRepository = repository;
         }
 
         public IList<Court> Court { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Court = await _repository.GetAll();
+            Court = await _courtsRepository.GetAll();
         }
     }
 }

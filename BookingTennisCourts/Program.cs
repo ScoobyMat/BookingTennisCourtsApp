@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using BookingTennisCourts.Repositories.Repositories;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Data.Entities.Identity;
-using BookingTennisCourts.Data.Data;
+using BookingTennisCourts.Installers;
 
 namespace BookingTennisCourts
 {
@@ -13,22 +8,9 @@ namespace BookingTennisCourts
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<BookingTennisCourtsAppDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddScoped<IReservationsRepository, ReservationsRepository>();
-            builder.Services.AddScoped<ICourtsRepository, CourtsRepository>();
-
-
-            builder.Services.AddDefaultIdentity<ApplicationUser>(options => { options.SignIn.RequireConfirmedAccount = false; })
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<BookingTennisCourtsAppDbContext>();
-
-            builder.Services.AddAuthentication();
-
-            builder.Services.AddRazorPages(o => { o.Conventions.AuthorizeFolder("/"); });
+            // Add services to the container.
+            IConfiguration configuration = builder.Configuration;
+            builder.Services.InstallServicesInAssembly(configuration);
 
             var app = builder.Build();
 

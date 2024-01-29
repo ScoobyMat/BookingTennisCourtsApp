@@ -17,11 +17,18 @@
     Nasze obiekty są dostępne dla wszystkich członków klubu, aby mogli cieszyć się grą o każdej porze dnia.</br>
 </p>
 
-<div class="ImgContainer d-flex justify-content-between">
-    <img src="/images/Kort1.jpg" alt="Kort1" class="img-fluid">
-    <img src="/images/Kort2.jpg" alt="Kort2" class="img-fluid">
-    <img src="/images/Kort3.jpg" alt="Kort3" class="img-fluid">
+<div class="Container d-flex justify-content-between">
+    @foreach (var court in Model.Court)
+    {
+        <div class="ImgContainer">
+            <img src="@court.UrlToPicture" alt="@court.Name" class="img-fluid">
+            <p>@court.Name</p>
+            <p>Opis: @court.Info</p>
+            <p>Cena za godzine: @court.PricePerHour zł</p>
+        </div>
+    }
 </div>
+
 
 <h2 class="mt-5">Zarezerwuj swój kort już teraz</h2>
 
@@ -41,7 +48,7 @@
         <span asp-validation-for="Reservation.Data" class="text-danger"></span>
     </div>
    
-    <div class="form-group">
+    <div class="form-group mt-2">
         <input type="submit" value="Sprawdz dostępne godziny" class="btn btn-success" />
     </div>
 </form>
