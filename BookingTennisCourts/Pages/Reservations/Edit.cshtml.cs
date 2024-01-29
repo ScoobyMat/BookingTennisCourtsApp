@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using BookingTennisCourts.Repositories.Contracts;
 using BookingTennisCourts.Repositories.Repositories;
 using BookingTennisCourts.Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using BookingTennisCourts.Data.Entities.Identity;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
@@ -12,17 +14,20 @@ namespace BookingTennisCourts.Pages.Reservations
     {
         private readonly IReservationsRepository _reservationRepository;
         private readonly ICourtsRepository _courtsRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EditModel(IReservationsRepository reservationRepository, ICourtsRepository courtsRepository)
+        public EditModel(IReservationsRepository reservationRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
         {
             _reservationRepository = reservationRepository;
             _courtsRepository = courtsRepository;
+            _userManager = userManager;
         }
 
-        public SelectList Courts { get; set; } = default!;
+        public SelectList Courts { get; set; }
+        public string UserFullName { get; set; }
 
         [BindProperty]
-        public Reservation Reservation { get; set; } = default!;
+        public Reservation Reservation { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -38,9 +43,13 @@ namespace BookingTennisCourts.Pages.Reservations
                 return NotFound();
             }
 
+            var user = await _userManager.FindByIdAsync(Reservation.UserId);
+            UserFullName = $"{user.FirstName} {user.LastName}";
+
             await LoadInitialData();
             return Page();
         }
+
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
@@ -52,10 +61,20 @@ namespace BookingTennisCourts.Pages.Reservations
                 return Page();
             }
 
+            // Sprawdź dostępność nowego terminu rezerwacji
+            var isReservationAvailable = _reservationRepository.CheckReservation(Reservation);
+            if (!isReservationAvailable)
+            {
+                ModelState.AddModelError(string.Empty, "Wybrany termin jest już zarezerwowany.");
+                await LoadInitialData();
+                return Page();
+            }
+
             await _reservationRepository.Update(Reservation);
 
             return RedirectToPage("./Index");
         }
+
 
         private async Task LoadInitialData()
         {

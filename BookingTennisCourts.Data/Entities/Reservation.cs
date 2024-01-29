@@ -8,7 +8,7 @@ namespace BookingTennisCourts.Data.Entities
     public class Reservation : BaseDomainEntity
     {
 
-        public int? CourtId { get; set; }
+        public int CourtId { get; set; }
 
         public virtual Court? Court { get; set; }
 

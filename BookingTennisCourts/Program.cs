@@ -13,14 +13,11 @@ namespace BookingTennisCourts
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddDbContext<BookingTennisCourtsAppDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IReservationsRepository, ReservationsRepository>();
             builder.Services.AddScoped<ICourtsRepository, CourtsRepository>();
 
@@ -53,71 +50,6 @@ namespace BookingTennisCourts
             app.UseAuthorization();
 
             app.MapRazorPages();
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                try
-                {
-                    var roles = new[] { "Admin", "User" };
-
-                    foreach (var role in roles)
-                    {
-                        if (!await roleManager.RoleExistsAsync(role))
-                        {
-                            await roleManager.CreateAsync(new IdentityRole(role));
-                            Console.WriteLine($"Rola {role} zosta³a pomyœlnie utworzona.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Rola {role} ju¿ istnieje.");
-                        }
-                    }
-
-                    string email = "admin@admin.com";
-                    string password = "Admin123$";
-                    string FirstName = "Admin";
-                    string LastName = "Admin";
-                    DateTime DateOfBirth = new DateTime(2000, 1, 1);
-
-                    if (await userManager.FindByEmailAsync(email) == null)
-                    {
-                        var user = new ApplicationUser
-                        {
-                            UserName = email,
-                            Email = email,
-                            FirstName = FirstName,
-                            LastName = LastName,
-                            DateOfBirth = DateOfBirth
-                        };
-
-                        var result = await userManager.CreateAsync(user, password);
-
-                        if (result.Succeeded)
-                        {
-                            await userManager.AddToRoleAsync(user, "Admin");
-                            Console.WriteLine("U¿ytkownik Admin zosta³ pomyœlnie utworzony.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("B³¹d przy tworzeniu u¿ytkownika:");
-                            foreach (var error in result.Errors)
-                            {
-                                Console.WriteLine(error.Description);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("U¿ytkownik Admin ju¿ istnieje.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Wyst¹pi³ b³¹d: {ex.Message}");
-                }
-            }
 
             app.Run();
         }

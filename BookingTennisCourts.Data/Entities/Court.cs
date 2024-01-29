@@ -6,14 +6,8 @@
 
         public string Info { get; set; }
 
-        public CourtStatus Status { get; set; }
+        public string Status { get; set; }
 
         public float PricePerHour { get; set; }
-    }
-
-    public enum CourtStatus
-    {
-        Available,
-        NotAvailable,
     }
 }

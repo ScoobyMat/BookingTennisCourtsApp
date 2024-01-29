@@ -2,44 +2,44 @@
 @model BookingTennisCourts.Pages.Reservations.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Reservation details";
 }
 
-<h1>Details</h1>
+<h1>Reservation details</h1>
 
 <div>
-    <h4>Reservation</h4>
+    <h4>Details for Reservation ID: @Model.Reservation.Id</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.CourtId)
+            Kort
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reservation.CourtId)
+            @Html.DisplayFor(model => model.CourtName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.Data)
+            Data
         </dt>
         <dd class="col-sm-10">
             @Model.Reservation.Data.ToShortDateString()
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.StartTime)
+            StartTime
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Reservation.StartTime)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.EndTime)
+            EndTime
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Reservation.EndTime)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reservation.UserId)
+            Użytkownik
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reservation.UserId)
+            @Html.DisplayFor(model => model.UserFullName)
         </dd>
     </dl>
 </div>

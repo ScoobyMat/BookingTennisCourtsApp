@@ -3,20 +3,65 @@ using BookingTennisCourts.Data.Entities;
 using BookingTennisCourts.Repositories.Contracts;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookingTennisCourts.Repositories.Repositories
 {
-    public class ReservationsRepository : GenericRepository<Reservation>, IReservationsRepository
+    public class ReservationsRepository : IReservationsRepository
     {
         private readonly BookingTennisCourtsAppDbContext _context;
 
-        public ReservationsRepository(BookingTennisCourtsAppDbContext context) : base(context)
+        public ReservationsRepository(BookingTennisCourtsAppDbContext context)
         {
             this._context = context;
+        }
+
+        public async Task<List<Reservation>> GetAll()
+        {
+            return await _context.Set<Reservation>().ToListAsync();
+        }
+
+        public async Task<Reservation> Get(int id)
+        {
+            return await _context.Set<Reservation>().FindAsync(id);
+        }
+
+        public async Task<bool> Exists(int id)
+        {
+            return await _context.Set<Reservation>().AnyAsync(e => e.Id == id);
+        }
+
+        public async Task Insert(Reservation reservation)
+        {
+            await _context.Set<Reservation>().AddAsync(reservation);
+            await SaveChanges();
+        }
+
+        public async Task Delete(int id)
+        {
+            var entity = await _context.Set<Reservation>().FindAsync(id);
+
+            if (entity != null)
+            {
+                _context.Set<Reservation>().Remove(entity);
+                await SaveChanges();
+            }
+        }
+
+        public async Task Update(Reservation reservation)
+        {
+            _context.Set<Reservation>().Attach(reservation);
+            _context.Entry(reservation).State = EntityState.Modified;
+            await SaveChanges();
+        }
+
+        public async Task<int> SaveChanges()
+        {
+            foreach (var entity in _context.ChangeTracker.Entries<BaseDomainEntity>().Where(q => q.State == EntityState.Added))
+            {
+                entity.Entity.DateCreated = DateTime.Now;
+            }
+
+            return await _context.SaveChangesAsync();
         }
 
         public async Task<List<Reservation>> GetReservationsByUserId(string userId)
@@ -99,9 +144,6 @@ namespace BookingTennisCourts.Repositories.Repositories
                 .Where(r => r.CourtId == courtId && r.Data == date)
                 .ToList();
         }
-
-
-
 
     }
 }

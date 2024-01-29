@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BookingTennisCourts.Data.Entities;
+﻿using BookingTennisCourts.Data.Entities;
 using BookingTennisCourts.Data.Entities.Identity;
 using BookingTennisCourts.Repositories.Contracts;
+using BookingTennisCourts.Repositories.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
     public class CreateModel : PageModel
     {
         private readonly IReservationsRepository _reservationRepository;
+        private readonly ICourtsRepository _courtsRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CreateModel(IReservationsRepository reservationRepository, UserManager<ApplicationUser> userManager)
+        public CreateModel(IReservationsRepository reservationRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
         {
             _reservationRepository = reservationRepository;
+            _courtsRepository = courtsRepository;
             _userManager = userManager;
         }
 
         [BindProperty]
         public Reservation Reservation { get; set; }
+        public SelectList Courts { get; set; }
 
         public List<TimeSpan> AvailableTimes { get; set; } = new List<TimeSpan>();
         public List<TimeSpan> AvailableTimesEnd { get; set; } = new List<TimeSpan>();
@@ -99,7 +101,8 @@ namespace BookingTennisCourts.Pages.Reservations
             // Rezerwacja nie koliduje, dodaj do bazy danych
             await _reservationRepository.Insert(Reservation);
 
-            // Przekieruj do strony /Reservations/Index
+            // Przekieruj do strony /Reservations/Index z komunikatem
+            TempData["ReservationMessage"] = "Rezerwacja dokonana pomyślnie!";
             return RedirectToPage("/Reservations/Index");
         }
 
@@ -107,6 +110,11 @@ namespace BookingTennisCourts.Pages.Reservations
         {
             AvailableTimes = _reservationRepository.GetAvailableTimes(Reservation.CourtId, Reservation.Data);
             AvailableTimesEnd = AvailableTimes.Select(time => time.Add(TimeSpan.FromHours(1))).ToList();
+        }
+
+        private async Task LoadInitialData()
+        {
+            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
         }
     }
 }

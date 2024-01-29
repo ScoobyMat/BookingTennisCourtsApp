@@ -14,19 +14,18 @@ namespace BookingTennisCourts.Pages.Reservations
     {
         private readonly IReservationsRepository _reservationsRepository;
         private readonly ICourtsRepository _courtsRepository;
-
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DetailsModel(IReservationsRepository repository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
+        public DetailsModel(IReservationsRepository reservationsRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
         {
-            _reservationsRepository = repository;
+            _reservationsRepository = reservationsRepository;
             _courtsRepository = courtsRepository;
             _userManager = userManager;
         }
 
-        public SelectList Courts { get; set; }
-
-        public Reservation Reservation { get; set; } = default!;
+        public Reservation Reservation { get; set; }
+        public string CourtName { get; set; }
+        public string UserFullName { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -42,15 +41,14 @@ namespace BookingTennisCourts.Pages.Reservations
                 return NotFound();
             }
 
-            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
+            // Pobierz nazwę kortu
+            CourtName = await _courtsRepository.GetCourtName(Reservation.CourtId);
+
+            // Pobierz pełne imię i nazwisko użytkownika
+            var user = await _userManager.FindByIdAsync(Reservation.UserId);
+            UserFullName = $"{user.FirstName} {user.LastName}";
 
             return Page();
-        }
-
-        public async Task<string> GetCourtName(int courtId)
-        {
-            var court = await _courtsRepository.GetCourtName(courtId);
-            return court;
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
+using System.Threading.Tasks;
 using BookingTennisCourts.Data.Entities;
 using BookingTennisCourts.Data.Entities.Identity;
 using BookingTennisCourts.Repositories.Contracts;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
 
 namespace BookingTennisCourts.Pages
 {
@@ -26,10 +24,10 @@ namespace BookingTennisCourts.Pages
             _userManager = userManager;
         }
 
-        public SelectList Courts { get; set; } = default!;
+        public IEnumerable<SelectListItem> Courts { get; set; } = new List<SelectListItem>();  // Zmiana na IEnumerable<SelectListItem>
 
         [BindProperty]
-        public Reservation Reservation { get; set; } = default!;
+        public Reservation Reservation { get; set; }
 
         public List<TimeSpan> AvailableTimes { get; set; } = new List<TimeSpan>();
 
@@ -63,7 +61,9 @@ namespace BookingTennisCourts.Pages
 
         private async Task LoadInitialData()
         {
-            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
+            var courts = await _courtsRepository.GetAll();
+
+            Courts = courts.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name });
         }
     }
 }
