@@ -3,21 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Booking Tennis Courts</title>
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
+    <title>@ViewData["Title"] - Tennis Court Booking Application</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookingTennisCourts.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.css">
-    <script src="https://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.js"></script>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
-
-
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
@@ -34,13 +23,10 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Strona główna</a>
                         </li>
-                        
-                        @if (!User.Identity.IsAuthenticated)
-                        {
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Reservations/Index">Rezerwacje</a>
                         </li>
-                        }
 
                         @if (User.IsInRole("Admin"))
                         {
@@ -61,8 +47,8 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - BookingTennisCourts
+        <div class="container text-center">
+            &copy; 2024 - TennisClub
         </div>
     </footer>
 

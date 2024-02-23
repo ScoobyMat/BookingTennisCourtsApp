@@ -1,14 +1,8 @@
-﻿using BookingTennisCourts.Data.Data;
-using BookingTennisCourts.Data.Entities;
-using BookingTennisCourts.Repositories.Contracts;
+﻿using BookingTennisCourts.Contracts;
+using BookingTennisCourts.Data.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BookingTennisCourts.Repositories.Repositories
+namespace BookingTennisCourts
 {
     public class CourtsRepository : ICourtsRepository
     {
@@ -21,8 +15,11 @@ namespace BookingTennisCourts.Repositories.Repositories
 
         public async Task<List<Court>> GetAll()
         {
-            return await _context.Set<Court>().ToListAsync();
+            return await _context.Set<Court>()
+                                 .OrderBy(c => c.Name)
+                                 .ToListAsync();
         }
+
 
         public async Task<Court> Get(int id)
         {
@@ -53,6 +50,7 @@ namespace BookingTennisCourts.Repositories.Repositories
 
         public async Task Update(Court court)
         {
+            court.DateCreated = DateTime.Now;
             _context.Set<Court>().Attach(court);
             _context.Entry(court).State = EntityState.Modified;
             await SaveChanges();
@@ -76,7 +74,7 @@ namespace BookingTennisCourts.Repositories.Repositories
         public async Task<string> GetCourtName(int courtId)
         {
             var court = await _context.Courts.FindAsync(courtId);
-            return court?.Name;
+            return court.Name;
         }
     }
 }

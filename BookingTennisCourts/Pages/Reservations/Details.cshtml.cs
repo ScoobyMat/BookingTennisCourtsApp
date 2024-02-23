@@ -1,12 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Data.Entities;
-using BookingTennisCourts.Repositories.Repositories;
-using BookingTennisCourts.Data.Entities.Identity;
+using BookingTennisCourts.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
@@ -14,9 +10,9 @@ namespace BookingTennisCourts.Pages.Reservations
     {
         private readonly IReservationsRepository _reservationsRepository;
         private readonly ICourtsRepository _courtsRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public DetailsModel(IReservationsRepository reservationsRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
+        public DetailsModel(IReservationsRepository reservationsRepository, ICourtsRepository courtsRepository, UserManager<User> userManager)
         {
             _reservationsRepository = reservationsRepository;
             _courtsRepository = courtsRepository;
@@ -41,13 +37,9 @@ namespace BookingTennisCourts.Pages.Reservations
                 return NotFound();
             }
 
-            // Pobierz nazwę kortu
             CourtName = await _courtsRepository.GetCourtName(Reservation.CourtId);
-
-            // Pobierz pełne imię i nazwisko użytkownika
             var user = await _userManager.FindByIdAsync(Reservation.UserId);
             UserFullName = $"{user.FirstName} {user.LastName}";
-
             return Page();
         }
     }

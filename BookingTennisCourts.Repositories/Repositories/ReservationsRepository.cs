@@ -1,10 +1,9 @@
-﻿using BookingTennisCourts.Data.Data;
-using BookingTennisCourts.Data.Entities;
-using BookingTennisCourts.Repositories.Contracts;
+﻿using BookingTennisCourts.Contracts;
+using BookingTennisCourts.Data.Data;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookingTennisCourts.Repositories.Repositories
+namespace BookingTennisCourts.Repositories
 {
     public class ReservationsRepository : IReservationsRepository
     {
@@ -17,8 +16,11 @@ namespace BookingTennisCourts.Repositories.Repositories
 
         public async Task<List<Reservation>> GetAll()
         {
-            return await _context.Set<Reservation>().ToListAsync();
+            return await _context.Set<Reservation>()
+                                 .OrderByDescending(r => r.Date)
+                                 .ToListAsync();
         }
+
 
         public async Task<Reservation> Get(int id)
         {
@@ -47,10 +49,9 @@ namespace BookingTennisCourts.Repositories.Repositories
             }
         }
 
-        public async Task Update(Reservation reservation)
+        public async Task Update(Reservation entity)
         {
-            _context.Set<Reservation>().Attach(reservation);
-            _context.Entry(reservation).State = EntityState.Modified;
+            _context.Entry(entity).State = EntityState.Modified;
             await SaveChanges();
         }
 
@@ -68,13 +69,41 @@ namespace BookingTennisCourts.Repositories.Repositories
         {
             return await _context.Reservations
                 .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.Date)
+                .ThenByDescending(r => r.StartTime)
                 .ToListAsync();
         }
 
-        public List<TimeSpan> GetAvailableTimes(int? courtId, DateTime date)
+        public async Task<List<Reservation>> GetReservationsByUserLastName(string lastName)
+        {
+            // Pobierz identyfikatory użytkowników na podstawie podanego nazwiska
+            var userIds = await _context.Users
+                .Where(u => u.LastName == lastName)
+                .Select(u => u.Id)
+                .ToListAsync();
+
+            // Pobierz rezerwacje dla znalezionych użytkowników
+            var reservations = await _context.Reservations
+                .Where(r => userIds.Contains(r.UserId))
+                .ToListAsync();
+
+            return reservations;
+        }
+
+        public async Task<List<Reservation>> GetReservationsByDate(DateTime date)
+        {
+            // Pobierz rezerwacje dla określonej daty
+            var reservations = await _context.Reservations
+                .Where(r => r.Date == date)
+                .ToListAsync();
+
+            return reservations;
+        }
+
+
+        public List<TimeSpan> GetAvailableTimes(int courtId, DateTime date)
         {
             var reservationsForCourtAndDate = GetReservationsForCourtAndDate(courtId, date);
-
             var bookedTimes = GetBookedTimes(reservationsForCourtAndDate);
 
             // Wybierz dostępne godziny spośród dostępnych w godzinach 10-18, które nie są zarezerwowane
@@ -89,7 +118,7 @@ namespace BookingTennisCourts.Repositories.Repositories
         public bool CheckReservation(Reservation reservation)
         {
             // Pobierz istniejące rezerwacje dla danego kortu i daty
-            var existingReservations = GetExistingReservations(reservation.CourtId, reservation.Data);
+            var existingReservations = GetExistingReservations(reservation.CourtId, reservation.Date);
 
             // Sprawdź, czy nowa rezerwacja koliduje z istniejącymi rezerwacjami
             return existingReservations.All(existingReservation =>
@@ -98,7 +127,7 @@ namespace BookingTennisCourts.Repositories.Repositories
             );
         }
 
-        public List<(TimeSpan Hour, string Status)> GetAvailabilityAndOccupancy(int? courtId, DateTime date)
+        public List<(TimeSpan Hour, string Status)> GetAvailabilityAndOccupancy(int courtId, DateTime date)
         {
             var reservationsForCourtAndDate = GetReservationsForCourtAndDate(courtId, date);
 
@@ -107,23 +136,19 @@ namespace BookingTennisCourts.Repositories.Repositories
                 .Select(hour =>
                 {
                     var currentHour = new TimeSpan(hour, 0, 0);
-
                     var isBooked = reservationsForCourtAndDate.Any(r => currentHour >= r.StartTime && currentHour < r.EndTime);
-
                     var status = isBooked ? "Zarezerwowane" : "Dostępne";
-
                     return (currentHour, status);
                 })
                 .ToList();
-
             return availableAndOccupiedHours;
         }
 
         // Pobierz rezerwacje dla danego kortu i daty
-        private List<Reservation> GetReservationsForCourtAndDate(int? courtId, DateTime date)
+        private List<Reservation> GetReservationsForCourtAndDate(int courtId, DateTime date)
         {
             return _context.Reservations
-                .Where(r => r.CourtId == courtId && r.Data.Date == date.Date)
+                .Where(r => r.CourtId == courtId && r.Date.Date == date.Date)
                 .ToList();
         }
 
@@ -138,10 +163,10 @@ namespace BookingTennisCourts.Repositories.Repositories
         }
 
         // Pobierz istniejące rezerwacje dla danego kortu i daty
-        private List<Reservation> GetExistingReservations(int? courtId, DateTime date)
+        private List<Reservation> GetExistingReservations(int courtId, DateTime date)
         {
             return _context.Reservations
-                .Where(r => r.CourtId == courtId && r.Data == date)
+                .Where(r => r.CourtId == courtId && r.Date == date)
                 .ToList();
         }
 

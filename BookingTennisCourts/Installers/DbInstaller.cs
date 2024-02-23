@@ -8,7 +8,7 @@ namespace BookingTennisCourts.Installers
         public void InstallServices(IServiceCollection services, IConfiguration Configuration)
         {
             services.AddDbContext<BookingTennisCourtsAppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("CourtBookingConnection")));
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Repositories.Repositories;
+﻿using BookingTennisCourts.Contracts;
+using BookingTennisCourts.Repositories;
 
 namespace BookingTennisCourts.Installers
 {

@@ -5,7 +5,33 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Rezeracje:</h1>
+@if (User.IsInRole("Admin"))
+{
+    <h1>Rezerwacje</h1>
+        <form method="get" asp-page-handler="Search">
+            <div class="form-group row">
+                <label for="lastName" class="col-sm-2 col-form-label">Nazwisko klienta:</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="lastName" name="lastName" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="reservationDate" class="col-sm-2 col-form-label">Data rezerwacji:</label>
+                <div class="col-sm-4">
+                    <input type="date" class="form-control" id="reservationDate" name="reservationDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-4 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Szukaj</button>
+                </div>
+            </div>
+        </form>
+}
+else
+{
+    <h1>Twoje rezerwacje</h1>
+}
 
 <div class="text-center">
     <h1 class="display-4">
@@ -20,24 +46,13 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>
-                    Id rezerwacji
-                </th>
-                <th>
-                    Kort
-                </th>
-                <th>
-                    Data
-                </th>
-                <th>
-                    StartTime
-                </th>
-                <th>
-                    EndTime
-                </th>
-                <th>
-                    Action
-                </th>
+                <th> Data </th>
+                <th> Kort </th>
+                <th> Od: </th>
+                <th> Do: </th>
+                <th> Cena: </th>
+                @if (User.IsInRole("Admin")) { <th> Klient </th> }
+                <th> Akcje: </th>
             </tr>
         </thead>
         <tbody>
@@ -45,13 +60,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Id)
+                        @item.Date.ToShortDateString()
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Court.Name)
-                    </td>
-                    <td>
-                        @item.Data.ToShortDateString()
+                        @Html.DisplayFor(modelItem => item.CourtId)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.StartTime)
@@ -60,9 +72,18 @@
                         @Html.DisplayFor(modelItem => item.EndTime)
                     </td>
                     <td>
-                        <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a> |
-                        <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"><i class="fa fa-book" aria-hidden="true"></i> Details</a> |
-                        <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
+                        @Html.DisplayFor(modelItem => item.FullPrice)
+                    </td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @await Model.GetUserName(item.UserId)
+                        </td>
+                    }
+                    <td>
+                        <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit" aria-hidden="true"></i> Edytuj</a> |
+                        <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"><i class="fa fa-book" aria-hidden="true"></i> Szczegóły</a> |
+                        <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash" aria-hidden="true"></i> Usuń</a>
                     </td>
                 </tr>
             }

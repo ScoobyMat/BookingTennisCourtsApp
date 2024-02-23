@@ -1,24 +1,21 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Contracts;
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class DeleteModel : PageModel
     {
-        private readonly ICourtsRepository _repository;
+        private readonly ICourtsRepository _courtsRepository;
 
-        public DeleteModel(ICourtsRepository repository)
+        public DeleteModel(ICourtsRepository courtsRepository)
         {
-            _repository = repository;
+            _courtsRepository = courtsRepository;
         }
 
         [BindProperty]
-        public Court Court { get; set; } = default!;
-
-        public bool HasReservations { get; set; }
+        public Court Court { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -27,14 +24,12 @@ namespace BookingTennisCourts.Pages.Courts
                 return NotFound();
             }
 
-            Court = await _repository.Get(id.Value);
+            Court = await _courtsRepository.Get(id.Value); 
 
             if (Court == null)
             {
                 return NotFound();
             }
-
-            HasReservations = await _repository.CourtHasReservations(id.Value);
 
             return Page();
         }
@@ -46,21 +41,9 @@ namespace BookingTennisCourts.Pages.Courts
                 return NotFound();
             }
 
-            Court = await _repository.Get(id.Value);
+            await _courtsRepository.Delete(id.Value);
+            await _courtsRepository.SaveChanges(); 
 
-            if (Court == null)
-            {
-                return NotFound();
-            }
-
-            HasReservations = await _repository.CourtHasReservations(id.Value);
-
-            if (HasReservations)
-            {
-                return Page();
-            }
-
-            await _repository.Delete(id.Value);
             return RedirectToPage("./Index");
         }
     }

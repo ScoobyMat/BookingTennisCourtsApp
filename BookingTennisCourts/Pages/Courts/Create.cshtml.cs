@@ -1,18 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Contracts; 
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class CreateModel : PageModel
     {
-        private readonly ICourtsRepository _repository;
+        private readonly ICourtsRepository _courtsRepository; 
+        private readonly IReservationsRepository _reservationsRepository; 
 
-        public CreateModel(ICourtsRepository repository)
+        public CreateModel(ICourtsRepository courtsRepository, IReservationsRepository reservationsRepository) 
         {
-            this._repository = repository;
+            _courtsRepository = courtsRepository;
+            _reservationsRepository = reservationsRepository;
         }
 
         public IActionResult OnGet()
@@ -23,15 +26,15 @@ namespace BookingTennisCourts.Pages.Courts
         [BindProperty]
         public Court Court { get; set; } = new Court();
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid || _repository == null || Court == null)
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            await _repository.Insert(Court);
+            await _courtsRepository.Insert(Court);
+            await _courtsRepository.SaveChanges(); 
 
             return RedirectToPage("./Index");
         }

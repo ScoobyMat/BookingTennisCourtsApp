@@ -2,32 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Repositories.Repositories;
-using BookingTennisCourts.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using BookingTennisCourts.Data.Entities.Identity;
+using Microsoft.EntityFrameworkCore;
+using BookingTennisCourts.Contracts;
+using BookingTennisCourts.Repositories;
 
 namespace BookingTennisCourts.Pages.Reservations
 {
     public class EditModel : PageModel
     {
-        private readonly IReservationsRepository _reservationRepository;
+        private readonly IReservationsRepository _reservationsRepository;
         private readonly ICourtsRepository _courtsRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EditModel(IReservationsRepository reservationRepository, ICourtsRepository courtsRepository, UserManager<ApplicationUser> userManager)
+        public EditModel(IReservationsRepository reservationsRepository, ICourtsRepository courtsRepository)
         {
-            _reservationRepository = reservationRepository;
+            _reservationsRepository = reservationsRepository;
             _courtsRepository = courtsRepository;
-            _userManager = userManager;
         }
-
-        public SelectList Courts { get; set; }
-        public string UserFullName { get; set; }
 
         [BindProperty]
         public Reservation Reservation { get; set; }
+
+        public SelectList Courts { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -36,49 +31,48 @@ namespace BookingTennisCourts.Pages.Reservations
                 return NotFound();
             }
 
-            Reservation = await _reservationRepository.Get(id.Value);
+            Reservation = await _reservationsRepository.Get(id.Value);
 
             if (Reservation == null)
             {
                 return NotFound();
             }
 
-            var user = await _userManager.FindByIdAsync(Reservation.UserId);
-            UserFullName = $"{user.FirstName} {user.LastName}";
+            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
 
-            await LoadInitialData();
             return Page();
         }
 
-
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadInitialData();
-                return Page();
-            }
-
             // Sprawdź dostępność nowego terminu rezerwacji
-            var isReservationAvailable = _reservationRepository.CheckReservation(Reservation);
+            var isReservationAvailable = _reservationsRepository.CheckReservation(Reservation);
             if (!isReservationAvailable)
             {
                 ModelState.AddModelError(string.Empty, "Wybrany termin jest już zarezerwowany.");
-                await LoadInitialData();
+                Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
                 return Page();
             }
 
-            await _reservationRepository.Update(Reservation);
+            var courtId = Reservation.CourtId;
+            var court = await _courtsRepository.Get(courtId);
+            double hours = (Reservation.EndTime - Reservation.StartTime).TotalHours;
+            float fullPrice = (float)(hours * court.PricePerHour);
+
+            Reservation.FullPrice = fullPrice;
+            var Edit = await _reservationsRepository.Get(Reservation.Id);
+
+            Edit.CourtId = Reservation.CourtId;
+            Edit.Date = Reservation.Date;
+            Edit.StartTime = Reservation.StartTime;
+            Edit.EndTime = Reservation.EndTime;
+            Edit.UserId = Reservation.UserId;
+            Edit.FullPrice = fullPrice;
+
+            await _reservationsRepository.Update(Edit);
+            await _reservationsRepository.SaveChanges();
 
             return RedirectToPage("./Index");
-        }
-
-
-        private async Task LoadInitialData()
-        {
-            Courts = new SelectList(await _courtsRepository.GetAll(), "Id", "Name");
         }
     }
 }

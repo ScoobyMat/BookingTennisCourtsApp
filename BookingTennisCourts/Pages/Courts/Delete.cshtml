@@ -5,11 +5,12 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<h1>Usuń</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Czy napewno chcesz usunąć dane?</h3>
+<h3>Tej operacji nie da się cofnąć</h3>
 <div>
-    <h4>Court</h4>
+    <h4>Kort</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -42,20 +43,17 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Court.UrlToPicture)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.DateCreated)
+        </dd>
     </dl>
-
+    
     <form method="post">
         <input type="hidden" asp-for="Court.Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+        <input type="submit" value="Usuń" class="btn btn-danger" /> |
+        <a asp-page="./Index" class="btn btn-outline-secondary">Powrót</a>
     </form>
-    
-    @if (Model.HasReservations)
-    {
-        <div class="alert alert-warning" role="alert">
-            This court has existing reservations. You cannot delete it until all reservations are canceled or completed.
-        </div>
-    }
-    
-    <div asp-validation-summary="All" class="text-danger"></div>
 </div>

@@ -1,19 +1,16 @@
 ﻿@page
-@using BookingTennisCourts.Data.Entities;
 @model BookingTennisCourts.Pages.Courts.CreateModel
 
 @{
     ViewData["Title"] = "Create";
 }
 
-<h1>Add new Court</h1>
-
-<h4>Court</h4>
+<h2>Dodaj kort</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Court.Name" class="control-label"></label>
                 <input asp-for="Court.Name" class="form-control" />
@@ -28,8 +25,8 @@
                 <label asp-for="Court.Status" class="control-label"></label>
                 <select asp-for="Court.Status" class="form-control">
                     <option value="" disabled selected>Select status</option>
-                    <option value="Dostępne">Dostępne</option>
-                    <option value="Nie dostępne">Nie dostępne</option>
+                    <option value="Available">Dostępne</option>
+                    <option value="Unavailable">Nie dostępne</option>
                 </select>
                 <span asp-validation-for="Court.Status" class="text-danger"></span>
             </div>
@@ -44,14 +41,14 @@
                 <span asp-validation-for="Court.UrlToPicture" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-success" />
+                <input type="submit" value="Stwórz" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a class="btn btn-primary" asp-page="Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+    <a asp-page="Index" class="btn btn-outline-secondary">Powrót</a>
 </div>
 
 @section Scripts {

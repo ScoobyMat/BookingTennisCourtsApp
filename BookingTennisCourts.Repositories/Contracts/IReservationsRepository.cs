@@ -1,12 +1,4 @@
-﻿using BookingTennisCourts.Data.Entities;
-using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookingTennisCourts.Repositories.Contracts
+﻿namespace BookingTennisCourts.Contracts
 {
     public interface IReservationsRepository
     {
@@ -18,8 +10,10 @@ namespace BookingTennisCourts.Repositories.Contracts
         Task Update(Reservation entity);
         Task<int> SaveChanges();
         Task<List<Reservation>> GetReservationsByUserId(string userId);
-        List<TimeSpan> GetAvailableTimes(int? courtId, DateTime data);
-        List<(TimeSpan Hour, string Status)> GetAvailabilityAndOccupancy(int? courtId, DateTime date);
+        List<TimeSpan> GetAvailableTimes(int courtId, DateTime date);
+        List<(TimeSpan Hour, string Status)> GetAvailabilityAndOccupancy(int courtId, DateTime date);
         bool CheckReservation(Reservation reservation);
+        Task<List<Reservation>> GetReservationsByUserLastName(string lastName);
+        Task<List<Reservation>> GetReservationsByDate(DateTime date);
     }
 }

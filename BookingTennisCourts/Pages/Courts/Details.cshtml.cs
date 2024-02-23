@@ -1,21 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Repositories.Contracts;
-using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Contracts; 
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class DetailsModel : PageModel
     {
-        private readonly ICourtsRepository _repository;
+        private readonly ICourtsRepository _courtsRepository; 
 
-        public DetailsModel(ICourtsRepository repository)
+        public DetailsModel(ICourtsRepository courtsRepository)
         {
-            _repository = repository;
+            _courtsRepository = courtsRepository;
         }
 
-        public Court Court { get; set; } = default!;
+        public Court Court { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -24,7 +23,7 @@ namespace BookingTennisCourts.Pages.Courts
                 return NotFound();
             }
 
-            Court = await _repository.Get(id.Value);
+            Court = await _courtsRepository.Get(id.Value); 
 
             if (Court == null)
             {

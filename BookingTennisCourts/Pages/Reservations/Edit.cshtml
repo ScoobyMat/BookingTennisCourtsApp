@@ -5,24 +5,23 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edycja</h1>
 
-<h4>Reservation</h4>
+<h4>Rezerwacja</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Reservation.Id" />
             <div class="form-group">
                 <label asp-for="Reservation.CourtId" class="control-label"></label>
                 <select asp-for="Reservation.CourtId" class="form-control" asp-items="@Model.Courts"></select>
                 <span asp-validation-for="Reservation.CourtId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Reservation.Data" class="control-label"></label>
-                <input asp-for="Reservation.Data" class="form-control" />
-                <span asp-validation-for="Reservation.Data" class="text-danger"></span>
+                <label asp-for="Reservation.Date" class="control-label"></label>
+                <input asp-for="Reservation.Date" class="form-control" />
+                <span asp-validation-for="Reservation.Date" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Reservation.StartTime" class="control-label">StartTime</label>
@@ -48,19 +47,20 @@
                 <span asp-validation-for="Reservation.EndTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Reservation.User" class="control-label">User</label>
-                <input asp-for="@Model.UserFullName" class="form-control" readonly />
-                <span asp-validation-for="Reservation.User" class="text-danger"></span>
+                <label asp-for="Reservation.UserId" class="control-label">User</label>
+                <input asp-for="Reservation.UserId" class="form-control" readonly />
+                <span asp-validation-for="Reservation.UserId" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="Reservation.Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success" />
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Powrót</a>
 </div>
 
 @section Scripts {

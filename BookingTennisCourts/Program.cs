@@ -33,6 +33,8 @@ namespace BookingTennisCourts
 
             app.MapRazorPages();
 
+            await app.InitializeRolesAndUsersAsync();
+
             app.Run();
         }
     }

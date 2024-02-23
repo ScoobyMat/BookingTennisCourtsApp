@@ -1,27 +1,20 @@
-﻿using BookingTennisCourts.Data.Entities.Identity;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookingTennisCourts.Data.Entities
+namespace BookingTennisCourts
 {
     public class Reservation : BaseDomainEntity
     {
-
+        [ForeignKey("Court")]
         public int CourtId { get; set; }
-
-        public virtual Court? Court { get; set; }
-
-        [DataType(DataType.Date)]
-        [Column(TypeName = "Date")]
-        public DateTime Data { get; set; }
-
+        [ForeignKey("User")]
+        public string UserId { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime Date { get; set; }
         public TimeSpan StartTime { get; set; }
-
         public TimeSpan EndTime { get; set; }
+        public float FullPrice { get; set; }
+        public Court Court { get; set; }
+        public User User { get; set; }
 
-        public string? UserId { get; set; }
-
-        public virtual ApplicationUser? User { get; set; }
     }
 }

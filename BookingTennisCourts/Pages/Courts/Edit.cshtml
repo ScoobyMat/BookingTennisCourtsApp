@@ -1,14 +1,13 @@
 ﻿@page
-@using BookingTennisCourts.Data.Entities
 @model BookingTennisCourts.Pages.Courts.EditModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edycja</h1>
 
-<h4>Court</h4>
+<h4>Kort</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -29,8 +28,8 @@
                 <label asp-for="Court.Status" class="control-label"></label>
                 <select asp-for="Court.Status" class="form-control">
                     <option value="" disabled selected>Select status</option>
-                    <option value="Dostępne">Dostępne</option>
-                    <option value="Nie dostępne">Nie dostępne</option>
+                    <option value="Available">Dostępne</option>
+                    <option value="Unavailable">Nie dostępne</option>
                 </select>
                 <span asp-validation-for="Court.Status" class="text-danger"></span>
             </div>
@@ -45,14 +44,14 @@
                 <span asp-validation-for="Court.UrlToPicture" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-success" />
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+    <a asp-page="./Index" class="btn btn-outline-secondary">Powrót</a>
 </div>
 
 @section Scripts {

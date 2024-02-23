@@ -1,5 +1,4 @@
 ﻿using BookingTennisCourts.Data.Data;
-using BookingTennisCourts.Data.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookingTennisCourts.Installers
@@ -8,7 +7,7 @@ namespace BookingTennisCourts.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDefaultIdentity<ApplicationUser>(options => { options.SignIn.RequireConfirmedAccount = false; })
+            services.AddDefaultIdentity<User>(options => { options.SignIn.RequireConfirmedAccount = false; })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<BookingTennisCourtsAppDbContext>();
 

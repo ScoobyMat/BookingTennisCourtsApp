@@ -1,23 +1,22 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using BookingTennisCourts.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
-using BookingTennisCourts.Data.Entities;
+using BookingTennisCourts.Contracts;
+
 
 namespace BookingTennisCourts.Pages.Courts
 {
     public class EditModel : PageModel
     {
-        private readonly ICourtsRepository _repository;
+        private readonly ICourtsRepository _courtsRepository;
 
-        public EditModel(ICourtsRepository repository)
+        public EditModel(ICourtsRepository courtsRepository)
         {
-            _repository = repository;
+            _courtsRepository = courtsRepository;
         }
 
         [BindProperty]
-        public Court Court { get; set; } = default!;
+        public Court Court { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -26,7 +25,7 @@ namespace BookingTennisCourts.Pages.Courts
                 return NotFound();
             }
 
-            Court = await _repository.Get(id.Value);
+            Court = await _courtsRepository.Get(id.Value);
 
             if (Court == null)
             {
@@ -36,8 +35,6 @@ namespace BookingTennisCourts.Pages.Courts
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -45,21 +42,8 @@ namespace BookingTennisCourts.Pages.Courts
                 return Page();
             }
 
-            try
-            {
-                await _repository.Update(Court);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _repository.Exists(Court.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _courtsRepository.Update(Court);
+            await _courtsRepository.SaveChanges();
 
             return RedirectToPage("./Index");
         }

@@ -5,50 +5,45 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Zarządzaj kortami w klubie</h1>
 
 <p>
-    <a class="btn btn-primary" asp-page="Create"><i class="fa fa-plus" aria-hidden="true"> </i> Create New</a>
+    <a class="btn btn-primary" asp-page="Create"><i class="fa fa-plus" aria-hidden="true"> </i> Dodaj kort</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Court[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Court[0].Info)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Court[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Court[0].PricePerHour)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Court) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Info)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PricePerHour)
-            </td>
-                <td>
-                    <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit" aria-hidden="true"> </i> Edit</a> |
-                    <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"><i class="fa fa-book" aria-hidden="true"></i> Details</a> |
-                    <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash" aria-hidden="true"></i> Delete</a>
-                </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th> Nazwa </th><th> Info </th><th> Status </th><th> Cena/h </th><th> Zdjęcie </th><th> Akcje </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Court)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Info)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PricePerHour)
+                    </td>
+                    <td>
+                        <img src="@item.UrlToPicture" alt="Zdjęcie kortu" style="max-width: 100px; max-height: 100px;" />
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@item.Id"> Edytuj </a> |
+                        <a class="btn btn-info" asp-page="./Details" asp-route-id="@item.Id"> Szczgóły </a> |
+                        <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.Id"> Usuń </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

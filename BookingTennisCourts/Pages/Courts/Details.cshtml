@@ -5,7 +5,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Szczegóły</h1>
 
 <div>
     <h4>Court</h4>
@@ -41,9 +41,15 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Court.UrlToPicture)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Court.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Court.DateCreated)
+        </dd>
     </dl>
 </div>
 <div>
-    <a class="btn btn-warning" asp-page="./Edit" asp-route-id="@Model.Court?.Id"><i class="fa fa-edit" aria-hidden="true"> </i>Edit</a> |
-    <a class="btn btn-primary" asp-page="./Index"><i class="fa fa-backspace" aria-hidden="true"></i> Back to List</a>
+    <a asp-page="./Edit" class="btn btn-warning" asp-route-id="@Model.Court.Id">Edytuj</a> |
+    <a asp-page="./Index" class="btn btn-outline-secondary">Powrót</a>
 </div>

@@ -1,5 +1,5 @@
 ﻿@page
-@model BookingTennisCourts.Pages.IndexModel
+@model IndexModel
 
 @{
     ViewData["Title"] = "Index";
@@ -18,13 +18,13 @@
 </p>
 
 <div class="Container d-flex justify-content-between">
-    @foreach (var court in Model.Court)
+    @foreach (var court in Model.Courts)
     {
         <div class="ImgContainer">
             <img src="@court.UrlToPicture" alt="@court.Name" class="img-fluid">
             <p>@court.Name</p>
             <p>Opis: @court.Info</p>
-            <p>Cena za godzine: @court.PricePerHour zł</p>
+            <p>Cena za godzinę: @court.PricePerHour zł</p>
         </div>
     }
 </div>
@@ -32,25 +32,34 @@
 
 <h2 class="mt-5">Zarezerwuj swój kort już teraz</h2>
 
+@if (User.Identity.IsAuthenticated)
+{
+    <h3>Wybierz kort i datę</h3>
 
-<h3>Wybierz kort i date</h3>
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="CourtId" class="control-label">Kort</label>
+            <select asp-for="CourtId" class="form-control">
+                @foreach (var court in Model.Courts)
+                {
+                    <option value="@court.Id">@court.Name</option>
+                }
+            </select>
+            <span asp-validation-for="CourtId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Date" class="control-label"></label>
+            <input type="date" asp-for="Date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
 
-<form method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label asp-for="Reservation.CourtId" class="control-label">Court</label>
-        <select asp-for="Reservation.CourtId" class="form-control" asp-items="@Model.Courts"></select>
-        <span asp-validation-for="Reservation.CourtId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Reservation.Data" class="control-label"></label>
-        <input asp-for="Reservation.Data" class="form-control" type="date" />
-        <span asp-validation-for="Reservation.Data" class="text-danger"></span>
-    </div>
-   
-    <div class="form-group mt-2">
-        <input type="submit" value="Sprawdz dostępne godziny" class="btn btn-success" />
-    </div>
-</form>
-
-
+        <div class="form-group mt-2">
+            <input type="submit" value="Sprawdź dostępne godziny" class="btn btn-success" />
+        </div>
+    </form>
+}
+else
+{
+    <h3>Zaloguj się, aby dokonać rezerwacji</h3>
+}
